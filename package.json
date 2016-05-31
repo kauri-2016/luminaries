@@ -1,0 +1,23 @@
+{
+  "name": "db-web",
+  "version": "1.0.0",
+  "description": "## Initial steps",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape tests/**/*.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "node-dev": "^3.1.3",
+    "node-inspector": "^0.12.8",
+    "tape": "^4.5.1"
+  },
+  "dependencies": {
+    "express": "^4.13.4",
+    "express-handlebars": "^3.0.0",
+    "knex": "^0.11.5",
+    "pg": "^4.5.5",
+    "sqlite3": "^3.1.4"
+  }
+}
