@@ -23,15 +23,15 @@
 
   ```js
   "scripts": {
-    "debug": "node-inspector & node-dev index.js"
-    "init": "knex init",
+    "debug": "node-inspector & node-dev --debug index.js"
+    "db:config:make": "knex init",
     "migrate:make": "knex migrate:make",
     "migrate:latest": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
     "seed:make": "knex seed:make",
     "seed:run": "knex seed:run",
-    "start": "node index.js"
-    "test": "tape tests.js"
+    "start": "node index.js",
+    "test": "tape test/**/*.js"
   },
   ```
 
@@ -46,6 +46,7 @@
   var path = require('path')
 
   var routes = require('./routes')
+  var PORT = process.env.PORT || 3000
 
   var app = express()
 
@@ -78,16 +79,18 @@
   ```xml
   <!DOCTYPE>
   <html>
-    <head>
-      <title>{{title}}</title>
-    </head>
-    <body>
-      <h1>{{title}}</h1>
-      <p><a href="/list">View luminaries</a></p>
-      <p><a href="/add">Add a new luminary</a></p>
-    </body>
+  <head>
+    <title>Luminaries {{title}}</title>
+  </head>
+  <body>
+    <h1>Luminaries {{title}}</h1>
+    <p><a href="/list">View luminaries</a></p>
+    <p><a href="/add">Add a new luminary</a></p>
+  </body>
   </html>
   ```
+
+* Start the server with `npm start` and check out http://localhost:3000.
 
 
 ## Add data storage
