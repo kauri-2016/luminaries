@@ -12,6 +12,7 @@ app.set('view engine', 'hbs')
 app.set('views', path.join(__dirname, 'views'))
 
 app.get('/', routes.index)
+app.get('/list', routes.list)
 
 app.listen(PORT, function () {
   console.log('Listening on port', PORT)

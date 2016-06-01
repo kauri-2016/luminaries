@@ -13,7 +13,7 @@
   npm i express express-handlebars --save
   npm i node-inspector node-dev --save-dev
   echo "node_modules" > .gitignore
-  echo "*.sqlite" >> .gitignore
+  echo "*.sqlite3" >> .gitignore
   echo "6" > .nvmrc
   git add .
   git commit -m "Initial commit"
@@ -84,18 +84,20 @@
   </head>
   <body>
     <h1>Luminaries {{title}}</h1>
-    <p><a href="/list">View luminaries</a></p>
     <p><a href="/add">Add a new luminary</a></p>
+    <p><a href="/list">View luminaries</a></p>
   </body>
   </html>
   ```
 
 * Start the server with `npm start` and check out http://localhost:3000.
 
+* Stage and commit changes.
+
 
 ## Add data storage
 
-* Create `knexfile.js` by running `npm run init`.
+* Create `knexfile.js` by running `npm run db:config:make`.
 
 * Create a `luminaries` table by running `npm run migrate:make create-luminaries`.
 
@@ -132,6 +134,109 @@
 * Refresh the `luminaries` table and verify the data was inserted.
 
 
-## Connecting the DB to the web app
+## Show the list of luminaries
+
+* Create the view `views/list.hbs`:
+
+  ```xml
+  <!DOCTYPE>
+  <html>
+  <head>
+    <title>Luminaries {{title}}</title>
+  </head>
+  <body>
+    <h1>Luminaries {{title}}</h1>
+    <ul>
+      {{#each luminaries}}
+      <li>{{firstName}} {{lastName}}</li>
+      {{/each}}
+    </ul>
+  </body>
+  </html>
+  ```
+
+* Add the route in `index.js`.
+
+  ```js
+  ...
+  app.get('/list', routes.list)
+  ...
+  ```
+
+* Create a route in `routes.js` and render the view (without data).
+
+  ```js
+  module.exports = {
+    index: index,
+    list: list
+  }
+
+  ...
+
+  function list (req, res) {
+    var model = {title: 'List'}
+    res.render('list', model)
+  }
+  ```
+
+* Run the server and verify the view is available.
+
+* Create a `data` module that returns the list of luminaries.
+
+  ```js
+  var knex = require('knex')
+  var config = require('./knexfile')
+
+  module.exports = {
+    getAllLuminaries: getAllLuminaries
+  }
+
+  function getAllLuminaries () {
+    var luminaries = knex(config.development)('luminaries')
+    return luminaries.select()
+  }
+  ```
+
+* Update the route to return data from the database.
+
+  ```js
+  var data = require('./data')
+  ...
+  function list (req, res) {
+    var model = {title: 'List'}
+    data.getAllLuminaries().then(function (luminaries) {
+      model.luminaries = luminaries
+      res.render('list', model)
+    })
+  }
+  ```
+
+* Stage and commit the changes.
+
+* Link each item in the `list.hbs` to a view that shows only one luminary.
+
+  ```xml
+  <ul>
+    {{#each luminaries}}
+    <li><a href="/luminary?id={{id}}">{{firstName}} {{lastName}}</a></li>
+    {{/each}}
+  </ul>
+  ```
+
+* Create a `/luminary` route in `routes.js` to show a single luminary.
+
+  ```js
+  module.exports = {
+    ...
+    luminary: luminary
+  }
+
+  function luminary (req, res) {
+    
+  }
+  ```
+
+
+
 
 
