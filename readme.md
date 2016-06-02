@@ -536,8 +536,84 @@
 
 ## Add the ability to add new photos
 
-* Edit the form on `views/create.hbs` to allow for photos:
+* Edit the form on `views/edit.hbs` to allow for adding photos:
 
   ```xml
+  <form action="/add-photo" method="post">
+    <input type="text" name="photoUrl">
+    <input type="hidden" name="id" value="{{luminary.id}}">
+    <button>Add photo</button>
+  </form>
 
+  {{#each luminary.photos}}
+  <p>
+    <form action="/delete-photo" method="post">
+      <a href="{{imageUrl}}">{{imageUrl}}</a>
+      <button type="text" name="id" value="{{id}}">Delete</button>
+    </form>
+  </p>
+  {{/each}}
   ```
+
+* Edit `views/luminary.hbs` to show the images:
+
+  ```xml
+  ...
+
+  {{#each luminary.photos}}
+  <img src="{{imageUrl}}" class="photo">
+  {{/each}}
+  ```
+
+* Add an `/add-photo` route to `index.js` and `route.js`:
+
+  ```js
+  app.post('/add-photo', routes.addPhoto)
+  ```
+
+  ```js
+  modules.exports = {
+    ...
+    addPhoto: addPhoto
+  }
+
+  function addPhoto (req, res) {
+    var id = req.body.id
+    var photoUrl = req.body.photoUrl
+    data.addNewPhoto(id, photoUrl)
+      .then(function () {
+        return res.redirect('/luminary?id=' + id)
+      })
+      .catch(function (err) {
+        res.status(500).send(err)
+      })
+  }
+  ```
+
+* Add the `addPhoto` function to `data.js`:
+
+  ```js
+  module.exports = {
+    ...
+    addNewPhotos: addNewPhotos
+  }
+
+function addNewPhotos (id, photoUrl) {
+  var connection = getConnection()
+  connection('photos')
+  .insert({
+    imageUrl: photoUrl,
+    luminary_id: id
+  })
+}
+  ```
+
+* Add the `join` to the `getLuminariesById` function:
+
+  ```js
+  var luminary = connection('luminaries')
+    .join('photos', 'luminaries.id', 'photos.luminary_id')
+    .where('id', '=', 'id').first()
+  return luminary
+  ```
+

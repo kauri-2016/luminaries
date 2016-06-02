@@ -5,3 +5,18 @@
   <input type="hidden" name="id" value="{{luminary.id}}" />
   <button>Save luminary</button>
 </form>
+
+<form action="/add-photo" method="post">
+  <input type="text" name="photoUrl">
+  <input type="hidden" name="id" value="{{luminary.id}}">
+  <button>Add photo</button>
+</form>
+
+{{#each photos}}
+<p>
+  <form action="/delete-photo" method="post">
+    <a href="{{photoUrl}}">{{photoUrl}}</a>
+    <button type="text" name="id" value="{{id}}">Delete</button>
+  </form>
+</p>
+{{/each}}

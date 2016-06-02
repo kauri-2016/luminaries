@@ -5,7 +5,8 @@ module.exports = {
   getAllLuminaries: getAllLuminaries,
   getLuminaryById: getLuminaryById,
   addLuminary: addLuminary,
-  updateLuminary: updateLuminary
+  updateLuminary: updateLuminary,
+  addNewPhoto: addNewPhoto
 }
 
 function getConnection () {
@@ -20,7 +21,10 @@ function getAllLuminaries () {
 
 function getLuminaryById (id) {
   var connection = getConnection()
-  var luminary = connection('luminaries').where('id', '=', id).first()
+  var luminary = connection('luminaries')
+    .leftJoin('photos', 'luminaries.id', 'photos.luminary_id')
+    .select('luminaries.id as id', 'firstName', 'lastName', 'photos.id as photoId', 'imageUrl')
+    .where('luminaries.id', '=', id)
   return luminary
 }
 
@@ -38,4 +42,13 @@ function updateLuminary (luminary) {
   return connection('luminaries')
     .where('id', '=', luminary.id)
     .update(luminary)
+}
+
+function addNewPhoto (id, photoUrl) {
+  var connection = getConnection()
+  return connection('photos')
+    .insert({
+      imageUrl: photoUrl,
+      luminary_id: id
+    })
 }

@@ -20,6 +20,7 @@ app.get('/create', routes.create)
 app.post('/add', routes.add)
 app.get('/edit', routes.edit)
 app.post('/update', routes.update)
+app.post('/add-photo', routes.addPhoto)
 
 app.listen(PORT, function () {
   console.log('Listening on port', PORT)

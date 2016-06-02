@@ -7,7 +7,8 @@ module.exports = {
   create: create,
   add: add,
   edit: edit,
-  update: update
+  update: update,
+  addPhoto: addPhoto
 }
 
 function index (req, res) {
@@ -35,13 +36,31 @@ function luminary (req, res) {
   if (!id) {
     return res.sendStatus(404)
   }
-  data.getLuminaryById(id).then(function (theLuminary) {
+  data.getLuminaryById(id).then(function (results) {
     var model = {
       layout: 'main',
       title: 'Luminary',
-      luminary: theLuminary
+      luminary: getLuminary(results),
+      photos: getPhotos(results)
     }
     res.render('luminary', model)
+  })
+}
+
+function getLuminary (data) {
+  return {
+    id: data[0].id,
+    firstName: data[0].firstName,
+    lastName: data[0].lastName
+  }
+}
+
+function getPhotos (data) {
+  return data.map(function (photo) {
+    return {
+      id: photo.photoId,
+      photoUrl: photo.imageUrl
+    }
   })
 }
 
@@ -71,14 +90,15 @@ function edit (req, res) {
     return res.sendStatus(404)
   }
   data.getLuminaryById(id)
-    .then(function (luminary) {
-      if (!luminary) {
+    .then(function (results) {
+      if (!results) {
         return res.sendStatus(404)
       }
       var model = {
         layout: 'main',
         title: 'Edit',
-        luminary: luminary
+        luminary: getLuminary(results),
+        photos: getPhotos(results)
       }
       return res.render('edit', model)
     })
@@ -99,7 +119,19 @@ function update (req, res) {
     lastName: last,
     id: id
   })
-    .then(function (luminary) {
+    .then(function () {
+      return res.redirect('/luminary?id=' + id)
+    })
+    .catch(function (err) {
+      res.status(500).send(err)
+    })
+}
+
+function addPhoto (req, res) {
+  var id = req.body.id
+  var photoUrl = req.body.photoUrl
+  data.addNewPhoto(id, photoUrl)
+    .then(function () {
       return res.redirect('/luminary?id=' + id)
     })
     .catch(function (err) {
